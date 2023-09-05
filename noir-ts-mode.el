@@ -74,12 +74,12 @@
     table)
   "Syntax table for `noir-ts-mode'.")
 
- (defvar noir-ts-mode--keywords
+(defvar noir-ts-mode--keywords
   '("as" "else" "fn" "for" "if"
     "impl" "in" "let" "mod" "global" "assert" "constrain"
     "struct" "use" (crate) (super) (return) (self)
     (mutable) (viewer)  (comptime))
-   "Noir keywords for tree-sitter font-locking.")
+  "Noir keywords for tree-sitter font-locking.")
 
 (defvar noir-ts-mode--operators
   '("!"  "!=" "%" "&" "&=" "&&" "*" "+" "+=" "," "-" "-="
@@ -125,7 +125,7 @@
    '((function_definition
       (identifier) @font-lock-function-name-face)
      (function_call
-        (identifier) @font-lock-function-call-face))
+      (identifier) @font-lock-function-call-face))
 
    :feature 'builtin
    :override t
@@ -193,38 +193,39 @@
   :group 'noir
   :syntax-table noir-ts-mode--syntax-table
 
-  (when (treesit-ready-p 'noir)
-    (treesit-parser-create 'noir)
+  (unless (treesit-ready-p 'noir)
+    (error "Language grammar for %s is missing" 'noir))
 
-    ;; Comments.
-    (setq-local comment-start "// ")
-    (setq-local comment-end "")
-    (setq-local comment-start-skip (rx (or "//" "/*")))
-    (setq-local comment-end-skip (rx (or "\n" "*/")))
+  (treesit-parser-create 'noir)
 
-    ;; Indent.
-    (setq-local indent-tabs-mode nil
-                treesit-simple-indent-rules noir-ts-mode--indent-rules)
+  ;; Comments.
+  (setq-local comment-start "// ")
+  (setq-local comment-end "")
+  (setq-local comment-start-skip (rx (or "//" "/*")))
+  (setq-local comment-end-skip (rx (or "\n" "*/")))
 
-    ;; Font-lock
-    (setq-local treesit-font-lock-settings noir-ts-mode--font-lock-settings)
-    (setq-local treesit-font-lock-feature-list
-                '((comment)
-                  (keyword string)
-                  (constant variable type function-name builtin number)
-                  (bracket delimiter operator)))
+  ;; Indent.
+  (setq-local indent-tabs-mode nil
+              treesit-simple-indent-rules noir-ts-mode--indent-rules)
 
-    ;; Navigation.
-    (setq-local treesit-defun-type-regexp
-                (regexp-opt '("function_definition"
-                              "struct_method"
-                              "struct_definition")))
+  ;; Font-lock
+  (setq-local treesit-font-lock-settings noir-ts-mode--font-lock-settings)
+  (setq-local treesit-font-lock-feature-list
+              '((comment)
+                (keyword string)
+                (constant variable type function-name builtin number)
+                (bracket delimiter operator)))
+
+  ;; Navigation.
+  (setq-local treesit-defun-type-regexp
+              (regexp-opt '("function_definition"
+                            "struct_method"
+                            "struct_definition")))
 
 
-    (treesit-major-mode-setup)))
+  (treesit-major-mode-setup))
 
 
 (provide 'noir-ts-mode)
 
 ;;; noir-ts-mode.el ends here
-
