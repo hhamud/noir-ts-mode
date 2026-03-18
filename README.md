@@ -12,12 +12,12 @@ An Emacs tree-sitter mode for the Noir Language.
 ``` elisp
 (add-to-list
  'treesit-language-source-alist
- '(noir "https://github.com/hhamud/tree-sitter-noir.git"))
+ '(noir "https://github.com/hhamud/tree-sitter-noir" "main" "src"))
 ```
 
 3. Install the grammar
 ``` elisp
-M-x treesit-install-language-grammar 
+M-x treesit-install-language-grammar RET noir RET
 ```
 
 4. Check if it has installed successfully
@@ -27,17 +27,25 @@ M-x treesit-install-language-grammar
 
 5. Download `noir-ts-mode.el` from the [GitHub repository](https://github.com/hhamud/noir-ts-mode).
 
-6. Move `noir-mode.el` to a directory in your Emacs load path.
+6. Move `noir-ts-mode.el` to a directory in your Emacs load path.
 
 7. Add the following code to your Emacs configuration file:
 
 ```elisp
-(require noir-ts-mode)
+(require 'noir-ts-mode)
 ```
 
 ## Usage
 
 Once noir-ts-mode.el is installed, it will automatically be enabled when you open a .nr file. The major mode will provide syntax highlighting for editing Noir code.
+
+## Testing
+
+Run the ERT suite in batch Emacs with:
+
+```shell
+emacs --batch -Q -L . -L test -l test/noir-ts-mode-tests.el -f noir-ts-mode-test-run
+```
 
 ## Contributing
 
