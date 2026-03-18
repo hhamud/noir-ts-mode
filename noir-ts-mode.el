@@ -1,10 +1,10 @@
-;;; noir-ts-mode.el --- tree-sitter support for Noir  -*- lexical-binding: t; -*-
+;;; noir-ts-mode.el --- Tree-sitter support for Noir  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) Hamza Hamud,
 
 ;; Version    : 0.0.1
 ;; Author     : Hamza Hamud <self@hamzahamud.com>
-;; Url        : https://github.com/hhamud/noir-ts-mode
+;; URL        : https://github.com/hhamud/noir-ts-mode
 ;; Maintainer : Hamza Hamud <self@hamzahamud.com>
 ;; Created    : July 2023
 ;; Keywords   : noir languages tree-sitter
