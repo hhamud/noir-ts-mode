@@ -1,10 +1,10 @@
-;;; noir-ts-mode.el --- tree-sitter support for Noir  -*- lexical-binding: t; -*-
+;;; noir-ts-mode.el --- Tree-sitter support for Noir  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) Hamza Hamud,
 
 ;; Version    : 0.0.1
 ;; Author     : Hamza Hamud <self@hamzahamud.com>
-;; Url        : https://github.com/hhamud/noir-ts-mode
+;; URL        : https://github.com/hhamud/noir-ts-mode
 ;; Maintainer : Hamza Hamud <self@hamzahamud.com>
 ;; Created    : July 2023
 ;; Keywords   : noir languages tree-sitter
@@ -75,10 +75,11 @@
   "Syntax table for `noir-ts-mode'.")
 
 (defvar noir-ts-mode--keywords
-  '("as" "else" "fn" "for" "if"
-    "impl" "in" "let" "mod" "global" "assert" "constrain"
-    "struct" "use" (crate) (super) (return) (self)
-    (mutable) (viewer)  (comptime))
+  '("as" "break" "continue" "else" "fn" "for" "if"
+    "impl" "in" "let" "loop" "mod" "global" "assert" "constrain"
+    "struct" "trait" "use" "where" "while"
+    (crate) (super) (return) (self)
+    (mutable) (viewer) (comptime) (unconstrained))
   "Noir keywords for tree-sitter font-locking.")
 
 (defvar noir-ts-mode--operators
@@ -89,84 +90,84 @@
 
 
 (defvar noir-ts-mode--font-lock-settings
-  (treesit-font-lock-rules
-
-   :feature 'bracket
-   :language 'noir
-   '((["(" ")" "[" "]" "{" "}"]) @font-lock-bracket-face)
-
-   :feature 'comment
-   :language 'noir
-   '((comment) @font-lock-comment-face)
-
-   :feature 'constant
-   :override t
-   :language 'noir
-   '((boolean) @font-lock-constant-face
-     (import_identifier (identifier) @font-lock-constant-face))
-
-
-   :feature 'delimiter
-   :language 'noir
-   '((["," "." ";" ":" "::"]) @font-lock-delimiter-face)
-
-   :feature 'keyword
-   :override t
-   :language 'noir
-   `([,@noir-ts-mode--keywords] @font-lock-keyword-face)
-
-   :feature 'number
-   :language 'noir
-   '((integer) @font-lock-constant-face)
-
-
-   :feature 'function-name
-   :language 'noir
-   '((function_definition
-      (identifier) @font-lock-function-name-face)
-     (function_call
-      (identifier) @font-lock-function-call-face))
-
-   :feature 'builtin
-   :override t
-   :language 'noir
-   '((macro) @font-lock-builtin-face)
-
-   :feature 'operator
-   :language 'noir
-   `([,@noir-ts-mode--operators] @font-lock-operator-face)
-
-
-   :feature 'type
-   :override t
-   :language 'noir
-   '(
-     (generic_type (identifier) @font-lock-type-face)
-     (generic (identifier) @font-lock-type-face)
-     (single_type) @font-lock-type-face
-     (array_type (identifier) @font-lock-type-face)
-     (module (identifier) @font-lock-type-face)
-     (return_type (identifier) @font-lock-type-face)
-     (struct_definition name: (identifier) @font-lock-type-face)
-     (struct_definition type: (identifier) @font-lock-type-face)
-     (typed_identifier type: (identifier) @font-lock-type-face)
-     (struct_method (identifier) @font-lock-type-face)
-     ((as_identifier type: (identifier) @font-lock-type-face)))
-
-
-   :feature 'variable
-   :language 'noir
-   '(
-     (let_declaration (binary_expression left: (identifier) @font-lock-variable-name-face))
-     (let_declaration (binary_expression left: (grouped_expression (identifier) @font-lock-variable-name-face)))
-     (struct_definition var: (identifier) @font-lock-variable-name-face)
-     (typed_identifier var: (identifier) @font-lock-variable-name-face)
-     (as_identifier (identifier) @font-lock-variable-name-face)
-     (global (binary_expression left: (typed_identifier var: (identifier) @font-lock-variable-name-face))))
-
-   :feature 'string
-   :language 'noir
-   '([(character) (string_literal)] @font-lock-string-face))
+  (append
+   (treesit-font-lock-rules
+    :feature 'bracket
+    :language 'noir
+    '((["(" ")" "[" "]" "{" "}"]) @font-lock-bracket-face))
+   (treesit-font-lock-rules
+    :feature 'comment
+    :language 'noir
+    '((comment) @font-lock-comment-face))
+   (treesit-font-lock-rules
+    :feature 'constant
+    :override t
+    :language 'noir
+    '((boolean) @font-lock-constant-face
+      (import_identifier (identifier) @font-lock-constant-face)))
+   (treesit-font-lock-rules
+    :feature 'delimiter
+    :language 'noir
+    '((["," "." ";" ":" "::"]) @font-lock-delimiter-face))
+   (treesit-font-lock-rules
+    :feature 'keyword
+    :override t
+    :language 'noir
+    `([,@noir-ts-mode--keywords] @font-lock-keyword-face))
+   (treesit-font-lock-rules
+    :feature 'number
+    :language 'noir
+    '([(integer) (float)] @font-lock-constant-face))
+   (treesit-font-lock-rules
+    :feature 'function-name
+    :language 'noir
+    '((function_definition
+       (identifier) @font-lock-function-name-face)
+      (trait_function_signature
+       (identifier) @font-lock-function-name-face)
+      (function_call
+       (identifier) @font-lock-function-call-face)))
+   (treesit-font-lock-rules
+    :feature 'builtin
+    :override t
+    :language 'noir
+    '((macro) @font-lock-builtin-face))
+   (treesit-font-lock-rules
+    :feature 'operator
+    :language 'noir
+    `([,@noir-ts-mode--operators] @font-lock-operator-face))
+   (treesit-font-lock-rules
+    :feature 'type
+    :override t
+    :language 'noir
+    '((generic_type (identifier) @font-lock-type-face)
+      (generic (identifier) @font-lock-type-face)
+      (single_type) @font-lock-type-face
+      (array_type (identifier) @font-lock-type-face)
+      (module (identifier) @font-lock-type-face)
+      (return_type (identifier) @font-lock-type-face)
+      (struct_definition name: (identifier) @font-lock-type-face)
+      (struct_definition type: (identifier) @font-lock-type-face)
+      (trait_definition (identifier) @font-lock-type-face)
+      (trait_alias (identifier) @font-lock-type-face)
+      (trait_bound type: (identifier) @font-lock-type-face)
+      (typed_identifier type: (identifier) @font-lock-type-face)
+      (as_identifier type: (identifier) @font-lock-type-face)))
+   (treesit-font-lock-rules
+    :feature 'variable
+    :language 'noir
+    '((let_declaration (identifier) @font-lock-variable-name-face)
+      (let_declaration (typed_identifier var: (identifier) @font-lock-variable-name-face))
+      (struct_definition var: (identifier) @font-lock-variable-name-face)
+      (typed_identifier var: (identifier) @font-lock-variable-name-face)
+      (parameter (identifier) @font-lock-variable-name-face)
+      (as_identifier (identifier) @font-lock-variable-name-face)
+      (global (identifier) @font-lock-variable-name-face)
+      (global (typed_identifier var: (identifier) @font-lock-variable-name-face))))
+   (treesit-font-lock-rules
+    :feature 'string
+    :language 'noir
+    '([(character) (string_literal)] @font-lock-string-face)))
 
   "Tree-sitter font-lock settings for `noir-ts-mode'.")
 
@@ -180,6 +181,7 @@
      ((parent-is "body") parent-bol noir-ts-mode-indent-offset)
      ((parent-is "_expression") parent-bol noir-ts-mode-indent-offset)
      ((parent-is "let_declaration") parent-bol noir-ts-mode-indent-offset)
+     ((parent-is "where_clause") parent-bol noir-ts-mode-indent-offset)
      ((parent-is "parameters") parent-bol noir-ts-mode-indent-offset)))
   "Tree-sitter indent rules for `noir-ts-mode'.")
 
@@ -219,7 +221,9 @@
   ;; Navigation.
   (setq-local treesit-defun-type-regexp
               (regexp-opt '("function_definition"
-                            "struct_method"
+                            "trait_function_signature"
+                            "trait_definition"
+                            "trait_alias"
                             "struct_definition")))
 
 

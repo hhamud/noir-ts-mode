@@ -1,0 +1,20 @@
+name: test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      NOIR_TS_GRAMMAR_SOURCE: https://github.com/hhamud/tree-sitter-noir
+    steps:
+      - uses: actions/checkout@v4
+      - uses: purcell/setup-emacs@master
+        with:
+          version: 29.4
+      - run: emacs --batch -Q -L . -L test -l test/noir-ts-mode-tests.el -f noir-ts-mode-test-run
