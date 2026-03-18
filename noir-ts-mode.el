@@ -2,7 +2,7 @@
 
 ;; Copyright (C) Hamza Hamud,
 
-;; Version    : 0.0.1
+;; Version    : 1.0.1
 ;; Author     : Hamza Hamud <self@hamzahamud.com>
 ;; URL        : https://github.com/hhamud/noir-ts-mode
 ;; Maintainer : Hamza Hamud <self@hamzahamud.com>
